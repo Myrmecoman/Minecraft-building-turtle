@@ -7,7 +7,8 @@ function analyse()
 		if v[2] == y then
 			yfound = true
 			print("Moving to ", v[1], ",", v[2], ",", v[3])
-			move_and_place(v[1], v[3])
+			move(v[1], v[2] + 1, v[3])
+			placeBlockDown()
 		end
 	end
  
@@ -23,7 +24,22 @@ function analyse()
 	return true
 end
 
-function move_and_place(wanted_x, wanted_z)
+function move(wanted_x, wanted_y, wanted_z)
+
+	-- going up first
+	if not (turtle_y == wanted_y) then
+		-- +y movement
+		if turtle_y < wanted_y then
+			while turtle_y < wanted_y do
+				turtle_y = turtle_y + 1
+				b = turtle.up()
+				if not b then
+					hibernate()
+					turtle.up()
+				end
+			end
+		end
+	end
 
 	if not (turtle_x == wanted_x) then
 
@@ -97,13 +113,32 @@ function move_and_place(wanted_x, wanted_z)
 
 	end
 
+	-- going down last
+	if not (turtle_y == wanted_y) then
+		-- -y movement
+		if turtle_y > wanted_y then
+			while turtle_y > wanted_y do
+				turtle_y = turtle_y - 1
+				b = turtle.down()
+				if not b then
+					hibernate()
+					turtle.down()
+				end
+			end
+		end
+	end
+	
+end
+
+
+function placeBlockDown()
 	bool = turtle.placeDown()
 	if not bool then
 		select_id = (select_id % 16) + 1
 		turtle.select(select_id)
 		bool2 = turtle.placeDown()
 		if not bool2 then
-			print("No more materials, hibernating")
+			print("No more materials, refilling")
 			hibernate()
 			turtle.placeDown()
 		end
@@ -118,21 +153,18 @@ function hibernate()
 		return
 	end
 
-	while true do
-		for i = 1, 16 do
-			turtle.select(i)
-			if turtle.placeDown() then
-				turtle.digDown()
-				select_id = i
-				return
-			end
-		end
-		sleep(1)
+	old_x = turtle_x
+	old_y = turtle_y
+	old_z = turtle_z
+
+	move(-1, 1, 0)
+	while turtle.suckDown() do
+		-- sucking
 	end
+	move(old_x, old_y, old_z)
 end
 
 
--- local t = to_vector '231 523 402 1223 9043 -1 4'
 function to_vector(s)
     local t = {}
     s:gsub('%-?%d+', function(n) t[#t+1] = tonumber(n) end)
@@ -176,15 +208,13 @@ end
 select_id = 1
 select(select_id)
 tryRefuel()
-turtle.up()
 y_rot = 0
-turtle_x = 0
+turtle_x = -1
 turtle_y = 1
 turtle_z = 0
 y = 0
 
-local file = 'model.txt'
-local all_lines = lines_from(file)
+local all_lines = lines_from('model.txt')
 
 darray = {}
 for k,v in pairs(all_lines) do
