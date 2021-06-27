@@ -13,3 +13,8 @@ It includes the parser to read the file, and the logic to sort the instructions 
 * Launch builder
 
 Don't forget to provide the turtle enough material (any placable cube) and fuel for it to run. It will search for fuel at startup and after each layer of material placed in its whole inventory. In case of lack of fuel or material, it will sleep until refilled (NOT TESTED YET). Also provide it a large enough and unobstructed space for it to build your model.
+Also be aware that going too far from the turtle, or disconnecting from a local world, will cause it to be unloaded and promptly stop it's labor. You might want a world anchor in the case of a live server. In the case of a local world, well you can't quit the game until it has finished.
+
+## To do
+
+Provide a way for the turtle to refill itself from a chest in order to be able to make larger constructions.
