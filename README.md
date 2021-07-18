@@ -13,7 +13,7 @@ It includes the parser to read the file, and the logic to sort the instructions 
 * Place your turtle below a chest containing the materials it will need if it goes out of material. It will save the location into memory.
 * Launch the program.
 
-Don't forget to provide the turtle enough material (any placable cube) and fuel for it to run. It will search for fuel at startup and after each layer of material placed in its whole inventory. In case of lack of fuel or material, it will sleep until refilled (NOT TESTED YET). Also provide it a large enough and unobstructed space for it to build your model.
+Don't forget to provide the turtle enough material (any placable cube) and fuel for it to run. It will search for fuel at startup and after each layer of material placed in its whole inventory. In case of lack of fuel it will sleep until refilled. In case of lack of material, it will go back to it's spawning position and try to get material from the chest below it. Also provide it a large enough and unobstructed space for it to build your model.
 Also be aware that going too far from the turtle, or disconnecting from a local world, will cause it to be unloaded and promptly stop it's labor. You might want a world anchor in the case of a live server. In the case of a local world, well you can't quit the game until it has finished.
 
 ## To do
