@@ -1,29 +1,3 @@
--- get and build a slice of the construction
-function analyse()
-	tryRefuel()
-	yfound = false
-	-- proccess all blocks with the y coordinates
-	for k,v in pairs(darray) do
-		if v[2] == y then
-			yfound = true
-			print("Moving to ", v[1], ",", v[2], ",", v[3])
-			move(v[1], v[2] + 1, v[3])
-			placeBlockDown()
-		end
-	end
- 
-	if yfound == false then
-		print("Job is finished, exiting")
-		return false
-	end
-
-	y = y + 1
-	turtle_y = turtle_y + 1
-	turtle.up()
-
-	return true
-end
-
 function move(wanted_x, wanted_y, wanted_z)
 
 	-- going up first
@@ -131,6 +105,33 @@ function move(wanted_x, wanted_y, wanted_z)
 end
 
 
+-- get and build a slice of the construction
+function analyse()
+	tryRefuel()
+	yfound = false
+	-- proccess all blocks with the y coordinates
+	for k,v in pairs(darray) do
+		if v[2] == y then
+			yfound = true
+			print("Moving to ", v[1], ",", v[2], ",", v[3])
+			move(v[1], v[2] + 1, v[3])
+			placeBlockDown()
+		end
+	end
+ 
+	if yfound == false then
+		print("Job is finished, exiting")
+		return false
+	end
+
+	y = y + 1
+	turtle_y = turtle_y + 1
+	turtle.up()
+
+	return true
+end
+
+
 function placeBlockDown()
 	bool = turtle.placeDown()
 	if not bool then
@@ -204,7 +205,6 @@ end
 
 --[[ MAIN EXECUTION ]]
 -- start the turtle on the ground and give it enough space for building
-
 select_id = 1
 select(select_id)
 tryRefuel()
@@ -214,15 +214,12 @@ turtle_y = 1
 turtle_z = 0
 y = 0
 
-local all_lines = lines_from('model.txt')
+local all_lines = lines_from('model_sorted.txt')
 
 darray = {}
 for k,v in pairs(all_lines) do
 	darray[k] = to_vector(v)
 end
-
--- sort lines by x values
-table.sort(darray, function(a, b) if not(a[1] == b[1]) then return a[1] < b[1] end return a[3] < b[3] end)
 
 while analyse() do
 	-- looping
