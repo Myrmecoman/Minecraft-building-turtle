@@ -105,34 +105,23 @@ function move(wanted_x, wanted_y, wanted_z)
 end
 
 
--- get and build a slice of the construction
-function analyse()
+-- building
+function build(start_index)
 	tryRefuel()
-	yfound = false
-	-- proccess all blocks with the y coordinates
+	-- proccess all blocks
 	for k,v in pairs(darray) do
-		if v[2] == y then
-			yfound = true
+		if k <= start_index then
+			-- no continue keyword in lua bruh
+		else
 			print("Moving to ", v[1], ",", v[2], ",", v[3])
 			move(v[1], v[2] + 1, v[3])
-			placeBlockDown()
+			placeBlockDown(k)
 		end
 	end
- 
-	if yfound == false then
-		print("Job is finished, exiting")
-		return false
-	end
-
-	y = y + 1
-	turtle_y = turtle_y + 1
-	turtle.up()
-
-	return true
 end
 
 
-function placeBlockDown()
+function placeBlockDown(k)
 	bool = turtle.placeDown()
 	if not bool then
 		select_id = (select_id % 16) + 1
@@ -144,6 +133,9 @@ function placeBlockDown()
 			turtle.placeDown()
 		end
 	end
+	file_memory = io.open("memory.txt", "w+")
+	file_memory:write(tostring(k))
+	file_memory:close()
 end
 
 
@@ -163,13 +155,6 @@ function hibernate()
 		-- sucking
 	end
 	move(old_x, old_y, old_z)
-end
-
-
-function to_vector(s)
-    local t = {}
-    s:gsub('%-?%d+', function(n) t[#t+1] = tonumber(n) end)
-    return t
 end
 
 
@@ -204,23 +189,36 @@ end
 
 
 --[[ MAIN EXECUTION ]]
--- start the turtle on the ground and give it enough space for building
+-- start the turtle on a chest and give it enough space for building
 select_id = 1
 select(select_id)
-tryRefuel()
+turtle.suckDown()
 y_rot = 0
 turtle_x = -1
 turtle_y = 1
 turtle_z = 0
 y = 0
 
+-- read all coordinates and load in ram
 local all_lines = lines_from('model_sorted.txt')
 
 darray = {}
-for k,v in pairs(all_lines) do
-	darray[k] = to_vector(v)
+for k,s in pairs(all_lines) do
+	chunks = {}
+	for substring in s:gmatch("%S+") do
+		table.insert(chunks, tonumber(substring))
+	end
+	darray[k] = chunks
 end
 
-while analyse() do
-	-- looping
+-- if memory.txt exists, starts from this index
+start_index = 0
+if file_exists("memory.txt") then
+	local memory_lines = lines_from('memory.txt')
+	for k,s in pairs(memory_lines) do
+		start_index = tonumber(s)
+		print("starting at ", s)
+	end
 end
+
+build(start_index)
